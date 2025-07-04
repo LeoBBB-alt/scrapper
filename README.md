@@ -33,6 +33,8 @@ Este projeto consiste em um web scraper que automatiza a extração de informaç
     ```bash
     chmod +x install.sh
     ./install.sh
+    # Se houver erros de dependências do navegador, tente:
+    # sudo python3 -m playwright install --with-deps
     ```
 
 3.  **Crie o arquivo `.env`:**
@@ -40,17 +42,9 @@ Este projeto consiste em um web scraper que automatiza a extração de informaç
     ```
     SITE_USERNAME="seu_usuario_do_site"
     SITE_PASSWORD="sua_senha_do_site"
+    TELEGRAM_TOKEN="seu_token_do_telegram"
     ```
     **Importante:** Este arquivo `.env` já está configurado para ser ignorado pelo Git (`.gitignore`), garantindo que suas credenciais não sejam versionadas.
-
-4.  **Obtenha o Token do Bot do Telegram:**
-    - Abra o Telegram e procure por `@BotFather`.
-    - Envie o comando `/newbot` e siga as instruções para criar seu bot.
-    - O BotFather lhe fornecerá um `token de API` (ex: `1234567890:ABCdEfGhIjKlMnOpQrStUvWxYz-123456`).
-
-5.  **Configure o `bot.py`:**
-    - Abra o arquivo `bot.py`.
-    - Substitua `TELEGRAM_TOKEN = 'SEU_TOKEN_AQUI'` pelo token que você recebeu do BotFather.
 
 ## Configuração do Scraper (`advanced_scraper.py`)
 
@@ -85,11 +79,23 @@ Abra o arquivo `advanced_scraper.py` e preencha as seguintes variáveis com os s
     source venv/bin/activate
     ```
 
-2.  **Inicie o bot do Telegram:**
+2.  **Inicie o bot do Telegram (em modo detached):**
+    Para que o bot continue rodando mesmo após você fechar o terminal, use `nohup` e `&` (apenas para Linux/macOS):
     ```bash
-    python bot.py
+    nohup python bot.py > bot.log 2>&1 &
     ```
-    O bot ficará rodando e aguardando comandos.
+    Para verificar se o bot está rodando:
+    ```bash
+    ps aux | grep bot.py
+    ```
+    Para parar o bot:
+    ```bash
+    kill <PID_DO_PROCESSO_DO_BOT>
+    ```
+    (O PID pode ser encontrado com `ps aux | grep bot.py`)
+
+    **Para Windows (rodar em segundo plano):**
+    Você pode usar `start /B python bot.py` em um terminal, mas ele ainda estará vinculado à sessão do terminal. Para um serviço mais robusto, considere ferramentas como `NSSM` ou `pm2` (com Node.js).
 
 3.  **Interaja com o bot no Telegram:**
     - Envie `/start` para uma mensagem de boas-vindas.
@@ -105,3 +111,10 @@ python advanced_scraper.py
 ```
 
 O script está configurado com `headless=False` para que você possa ver o navegador automatizado em ação. Em caso de erros, ele tentará salvar screenshots (`timeout_error.png`, `error_screenshot.png`) para ajudar na depuração.
+
+### Entendendo os Arquivos de Erro
+
+Quando o scraper encontra um problema, ele pode gerar os seguintes arquivos de imagem na raiz do projeto para auxiliar na depuração:
+
+- `timeout_error.png`: Este screenshot é gerado quando o Playwright não consegue encontrar um elemento na página dentro do tempo limite especificado. Isso geralmente indica que o seletor está incorreto, o elemento ainda não carregou, ou a página não está no estado esperado.
+- `error_screenshot.png`: Este screenshot é gerado para erros inesperados que não são timeouts. Ele captura a tela no momento da exceção, o que pode ajudar a identificar o estado da página quando o erro ocorreu.
