@@ -1,7 +1,12 @@
 import asyncio
 import logging
+import os
 from telegram import Update, BotCommand
 from telegram.ext import Application, CommandHandler, ContextTypes
+from dotenv import load_dotenv
+
+# Carrega as variáveis do arquivo .env para o ambiente
+load_dotenv()
 
 # Importa a função do scraper avançado
 from advanced_scraper import fetch_site_details
@@ -12,8 +17,8 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-# Seu token do Telegram (já preenchido)
-TELEGRAM_TOKEN = '7934207024:AAEfJHEze9yU6ArUCuB179WZvXLXHcDZla8'
+# Seu token do Telegram (lido do .env)
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Envia uma mensagem de boas-vindas."""
@@ -52,6 +57,10 @@ def main() -> None:
     """
     Inicia o bot.
     """
+    if not TELEGRAM_TOKEN:
+        print("ERRO: O token do Telegram não foi encontrado. Certifique-se de que a variável TELEGRAM_TOKEN está definida no seu arquivo .env")
+        return
+
     application = Application.builder().token(TELEGRAM_TOKEN).build()
 
     # Adiciona os handlers de comando
