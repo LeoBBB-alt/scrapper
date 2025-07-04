@@ -1,0 +1,23 @@
+# Arquivo para ignorar arquivos no Git
+
+# Arquivos de ambiente - NUNCA REMOVA ESTA LINHA
+.env
+
+# Diretórios de cache e dependências do Python
+__pycache__/
+venv/
+env/
+*.pyc
+Include/
+Lib/
+Scripts/
+
+# Arquivos de IDEs
+.vscode/
+.idea/
+
+# Arquivos gerados pelo Playwright ou Scrapers
+error_screenshot.png
+timeout_error.png
+modal_content_debug.html
+*.log
